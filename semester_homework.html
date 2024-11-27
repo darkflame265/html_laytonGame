@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- jQuery 라이브러리를 불러옴 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <title>탭 메뉴</title>
+    <style>
+      /* 스타일 시트 (CSS) 시작 */
+
+      /* 페이지 전체(body)에 대한 스타일 */
+      body {
+        margin-top: 100px; /* 페이지 상단 여백 설정 */
+        font-family: "Trebuchet MS", serif; /* 폰트 설정 */
+        line-height: 1.6; /* 텍스트 라인 높이 설정 */
+      }
+
+      /* 컨테이너(.container)에 대한 스타일 */
+      .container {
+        width: 500px; /* 컨테이너 너비 설정 */
+        margin: 0 auto; /* 가운데 정렬을 위한 왼쪽/오른쪽 여백 설정 */
+      }
+
+      /* 탭 목록(ul.tabs)에 대한 스타일 */
+      ul.tabs {
+        margin: 0px; /* 왼쪽 여백 제거 */
+        padding: 0px; /* 내부 여백 제거 */
+        list-style: none; /* 목록 기호 제거 */
+      }
+
+      /* 각 탭 버튼(ul.tabs li)에 대한 스타일 */
+      ul.tabs li {
+        background: none; /* 배경 없음 */
+        color: #222; /* 글자 색상 설정 */
+        display: inline-block; /* 인라인 블록 요소로 표시 (가로로 나열) */
+        padding: 10px 15px; /* 내부 여백 설정 */
+        cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능하게 함 */
+      }
+
+      /* 현재 선택된 탭 버튼(ul.tabs li.current)에 대한 스타일 */
+      ul.tabs li.current {
+        background: #ededed; /* 선택된 탭의 배경색 설정 */
+        color: #222; /* 선택된 탭의 글자 색상 설정 */
+      }
+
+      /* 탭 컨텐츠(.tab-content)에 대한 스타일 */
+      .tab-content {
+        display: none; /* 컨텐츠 숨김 */
+        background: #ededed; /* 배경색 설정 */
+        padding: 15px; /* 내부 여백 설정 */
+      }
+
+      /* 현재 선택된 탭 컨텐츠(.tab-content.current)에 대한 스타일 */
+      .tab-content.current {
+        display: inherit; /* 선택된 컨텐츠를 표시 */
+      }
+
+      body {
+        height: 100vh;
+        background: url(./layton_box.jpg) no-repeat center;
+        background-size: cover;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column; /* 수직으로 배치 */
+        align-items: center; /* 가운데 정렬 */
+        height: 100vh; /* 전체 화면 높이 */
+        margin: 0; /* 기본 여백 제거 */
+    }
+    .box {
+        width: 600px; /* 너비 */
+        height: 450px; /* 높이 */
+        background-color: lightblue; /* 배경색 */
+        margin: 5px; /* div 간의 간격 */
+    }
+
+    /*
+    #box1 {
+      background: url(./q2.png) no-repeat center;
+      background-size: cover;
+    }
+      */
+
+    
+    canvas {
+      width: 600px; /* 너비 */
+      height: 450px; /* 높이 */
+
+      background: url(./q2.png) no-repeat center;
+      background-size: cover;
+      border: 1px solid #000;
+
+      display: block; /* 여백 제거 */
+    }
+
+    #box2 {
+      background: url(./a2.png) no-repeat center;
+      background-size: cover;
+    }
+
+    .tab-link {
+      background-color: lightblue; /* 배경색 */
+      font-size: 20px; /* 글자 크기 */
+      font-weight: bold;
+      color: lightblue; /* 글자색 (배경색과 동일) */
+      text-shadow: 1px 1px 2px yellow; /* 텍스트 그림자 추가 */
+    }
+
+    #input1 {
+      width: 300px;
+      height: 50px;
+      font-size: 20px;
+      border: 3px solid black;
+      border-radius: 5px;
+    }
+
+    .w-btn-outline {
+      position: relative;
+      padding: 15px 30px;
+      border-radius: 15px;
+      font-family: "paybooc-Light", sans-serif;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.25s;
+  }
+
+    .w-btn-outline:hover {
+      letter-spacing: 2px;
+      transform: scale(1.2);
+      cursor: pointer;
+  }
+
+  .w-btn-yellow-outline {
+    border: 3px solid #fce205;
+    color: #6e6e6e;
+  }
+
+  .w-btn-yellow-outline:hover {
+    background-color: #fce205;
+    color: #6e6e6e;
+}
+
+  #box2 {
+  }
+        
+
+/* 스타일 시트 (CSS) 끝 */
+
+  </style>
+  </head>
+  <body>
+
+    <canvas id="myCanvas" width="600px" height="450px">
+
+    </canvas>
+
+    <!-- <div class="box" id="box1">
+
+    </div> -->
+    <div class="box" id="box2">
+
+      <div class="container">
+        <ul class="tabs">
+          <li class="tab-link current" data-tab="tab-1">힌트1</li>
+          <li class="tab-link" data-tab="tab-2">힌트2</li>
+          <li class="tab-link" data-tab="tab-3">힌트3</li>
+          <li class="tab-link" data-tab="tab-4">메모</li>
+          <li class="tab-link" data-tab="tab-5">제출</li>
+          <li class="tab-link" data-tab="tab-6">X</li>
+        </ul>
+  
+  
+        <div id="tab-1" class="tab-content current">
+          <h2>힌트1</h2>
+          <p>고양이들의 사냥 속도는 모두 동일하다.</p>
+        </div>
+        <div id="tab-2" class="tab-content">
+          <h2>힌트2</h2>
+          <p>고양이 5마리가 5분 동안 5마리의 쥐를 잡는다.</p>
+          <p>그렇다면 고양이 한 마리는 5분 동안 몇 마리의 쥐를 잡을 수 있을까?</p>
+        </div>
+        <div id="tab-3" class="tab-content">
+          <h2>힌트3</h2>
+          <p>고양이 한 마리는 5분 동안 한 마리의 쥐를 잡는다.</p>
+          <p>즉, 고양이 한 마리는 백 분 동안 20 마리의 쥐를 잡을 수 있다.</p>
+        </div>
+        <div id="tab-4" class="tab-content">
+          <h2>메모(위쪽 화면에 그림을 그릴 수 있습니다!)</h2>
+          <button id="erase_btn" class="w-btn-outline w-btn-yellow-outline" onclick="erase_all()">모든 페인트 지우기</button>
+        
+        </div>
+        <div id="tab-5" class="tab-content">
+          <h2>제출</h2>
+          <p>입력칸에 답을 적고, 옆에 있는 제출 버튼을 누릅니다.</p>
+
+          <form id="form" method="GET">
+            <input id="input1" type="text" placeholder="입력해주세요!"/>
+            <input id="input2" class="w-btn-outline w-btn-yellow-outline" type="submit"/>
+          </form>
+        </div>
+        <div id="tab-6" class="tab-content">
+          <h2>X</h2>
+          <p>X 버튼은 탭 상단 우측 끝에 배치해야 깔끔합니다.</p>
+          <p>누르면 탭을 종료합니다.</p>
+          <p>탭을 비활성화하고, 하얀색의 탭 배경을 지웁니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="./paint.js"></script>
+    <!-- jQuery를 사용하여 탭 메뉴의 동작을 구현하는 스크립트 -->
+    <script>
+      // 문서가 준비되면 실행됨
+      $(document).ready(function () {
+        $("ul.tabs li").removeClass("current");
+        $(".tab-content").removeClass("current");
+        // 각 탭 버튼을 클릭할 때의 동작을 정의하는 이벤트 핸들러
+        $("ul.tabs li").click(function () {
+          // 클릭한 탭 버튼의 data-tab 속성 값을 가져옴
+          var tab_id = $(this).attr("data-tab");
+
+          if (tab_id == "tab-6")
+          {
+            // 모든 탭 버튼과 탭 컨텐츠의 'current' 클래스를 제거
+            $("ul.tabs li").removeClass("current");
+            $(".tab-content").removeClass("current");
+          } else {
+
+            // 모든 탭 버튼과 탭 컨텐츠의 'current' 클래스를 제거
+            $("ul.tabs li").removeClass("current");
+            $(".tab-content").removeClass("current");
+
+            // 클릭한 탭 버튼과 해당 탭 컨텐츠에 'current' 클래스를 추가하여 활성화
+            $(this).addClass("current");
+            $("#" + tab_id).addClass("current");
+          }
+        });
+      });
+
+      document.getElementById("form").onsubmit = function() {
+        var sc = document.getElementById("input1");
+
+        if (sc.value == "5")
+        {
+          alert("정답입니다!\n 해설:\n고양이 한 마리가 5분 동안 쥐 한 마리를 잡으므로, 고양이 한 마리는 100분 동안 20마리를 잡을 수 있습니다.\n즉, 고양이 다섯 마리가 있으면 100분 동안 100 마리의 쥐를 잡을 수 있습니다.");
+          
+        } else {
+          alert("틀렸습니다!!!\n" + sc.value + " 는 답이 아닙니다. (숫자만 적어주세요.)")
+        }
+        return false;
+      }
+    </script>
+  </body>
+</html>
