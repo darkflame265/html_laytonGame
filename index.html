@@ -160,12 +160,29 @@ ul.tabs li:focus-visible{outline:3px solid #835b2e;outline-offset:-3px}
 #input1{box-sizing:border-box;max-width:100%;min-width:0}
 .w-btn-outline:hover{letter-spacing:normal;transform:none}
 .demo-note{box-sizing:border-box;width:100%;max-width:600px;margin:16px 0 0;padding:10px 14px;border-radius:8px;background:#fffE;color:#483524;font-size:12px;text-align:center}
+.puzzle-nav{box-sizing:border-box;width:100%;max-width:600px;margin-bottom:12px;padding:12px;border-radius:10px;background:#fff3dd}
+.puzzle-nav header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#543d24}
+.puzzle-buttons{display:flex;gap:8px}
+.puzzle-buttons button{flex:1;padding:10px 8px;border:1px solid #b59868;border-radius:7px;background:#fffaf0;color:#543d24;font:inherit;cursor:pointer}
+.puzzle-buttons button[aria-pressed="true"]{background:#65492d;color:#fff1cf;border-color:#65492d;font-weight:bold}
+button:focus-visible{outline:3px solid #b86c1a;outline-offset:3px}
+#answer-result{box-sizing:border-box;width:100%;max-width:600px;padding:12px 16px;margin:8px 0;background:#fff3dd;border-radius:8px;color:#483524}
+#answer-result p{margin:0 0 8px}
+#next-puzzle{padding:8px 16px;border:0;border-radius:6px;background:#65492d;color:#fff1cf;cursor:pointer;font:inherit}
 @media(max-width:480px){.box{min-height:360px}ul.tabs li{font-size:15px;padding:8px 11px}.tab-content{padding:12px}.w-btn-outline{padding:11px 15px}#input1{width:100%}}
 /* 스타일 시트 (CSS) 끝 */
 
   </style>
   </head>
   <body>
+
+    <nav class="puzzle-nav" aria-label="문제 선택">
+      <header><strong>수수께끼 선택</strong><span id="puzzle-progress" aria-live="polite">1 / 2</span></header>
+      <div class="puzzle-buttons">
+        <button type="button" data-puzzle="0" aria-pressed="true">01 카메라와 케이스</button>
+        <button type="button" data-puzzle="1" aria-pressed="false">02 고양이와 쥐</button>
+      </div>
+    </nav>
 
     <canvas id="myCanvas" width="600" height="450" aria-label="문제 화면과 손그림 메모 영역">
 
@@ -224,35 +241,84 @@ ul.tabs li:focus-visible{outline:3px solid #835b2e;outline-offset:-3px}
       </div>
     </div>
 
+    <section id="answer-result" aria-live="polite" hidden>
+      <p id="answer-message"></p>
+      <button id="next-puzzle" type="button" hidden>다음 문제 →</button>
+    </section>
     <script src="./paint.js"></script>
-    <!-- jQuery를 사용하여 탭 메뉴의 동작을 구현하는 스크립트 -->
     <script>
+      const puzzles = [
+        {
+          title: '카메라와 케이스', question: './q1.png', illustration: './a1.png', answer: '95',
+          hints: [
+            ['카메라 본체와 케이스의 가격 차이가 300달러라는 점에 주목하세요.'],
+            ['케이스 가격을 x라고 하면 카메라는 x + 300달러입니다.', '둘을 합한 가격은 310달러입니다.'],
+            ['케이스 두 개 값에 300달러를 더하면 310달러입니다.', '케이스 가격을 구한 뒤 100달러에서 빼 보세요.']
+          ],
+          explanation: '케이스 가격을 x라고 하면 x + (x + 300) = 310이므로 케이스는 5달러입니다. 100달러를 냈으므로 거스름돈은 95달러입니다.'
+        },
+        {
+          title: '고양이와 쥐', question: './q2.png', illustration: './a2.png', answer: '5',
+          hints: [
+            ['고양이들의 사냥 속도는 모두 동일합니다.'],
+            ['고양이 5마리가 5분 동안 쥐 5마리를 잡습니다.', '고양이 한 마리는 5분 동안 몇 마리의 쥐를 잡을까요?'],
+            ['고양이 한 마리는 5분 동안 쥐 한 마리를 잡습니다.', '고양이 한 마리는 100분 동안 쥐 20마리를 잡을 수 있습니다.']
+          ],
+          explanation: '고양이 한 마리가 5분 동안 쥐 한 마리를 잡으므로, 100분 동안에는 20마리를 잡습니다. 따라서 고양이 5마리면 100분 동안 쥐 100마리를 잡을 수 있습니다.'
+        }
+      ];
+      let currentPuzzle = 0;
       const tabs = [...document.querySelectorAll('ul.tabs li')];
       const panels = [...document.querySelectorAll('.tab-content')];
+      function closeTabs() {
+        tabs.forEach(item=>{item.classList.remove('current');item.setAttribute('aria-expanded','false');});
+        panels.forEach(panel=>panel.classList.remove('current'));
+      }
       tabs.forEach(tab => {
         tab.classList.remove('current');tab.tabIndex=0;tab.setAttribute('role','button');tab.setAttribute('aria-expanded','false');
         tab.addEventListener('click', () => {
-          tabs.forEach(item=>{item.classList.remove('current');item.setAttribute('aria-expanded','false');});
-          panels.forEach(panel=>panel.classList.remove('current'));
+          closeTabs();
           if(tab.dataset.tab==='tab-6')return;
           tab.classList.add('current');tab.setAttribute('aria-expanded','true');document.getElementById(tab.dataset.tab).classList.add('current');
         });
         tab.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();tab.click();}});
       });
-      panels.forEach(panel=>panel.classList.remove('current'));
-
-      document.getElementById("form").onsubmit = function() {
-        var sc = document.getElementById("input1");
-
-        if (sc.value.trim() == "5")
-        {
-          alert("정답입니다!\n 해설:\n고양이 한 마리가 5분 동안 쥐 한 마리를 잡으므로, 고양이 한 마리는 100분 동안 20마리를 잡을 수 있습니다.\n즉, 고양이 다섯 마리가 있으면 100분 동안 100 마리의 쥐를 잡을 수 있습니다.");
-          
-        } else {
-          alert("틀렸습니다!!!\n" + sc.value + " 는 답이 아닙니다. (숫자만 적어주세요.)")
-        }
-        return false;
+      function selectPuzzle(index) {
+        currentPuzzle = index;
+        const puzzle = puzzles[index];
+        canvas.style.backgroundImage = `url("${puzzle.question}")`;
+        canvas.setAttribute('aria-label', `${puzzle.title} 문제 화면과 손그림 메모 영역`);
+        document.getElementById('box2').style.backgroundImage = `url("${puzzle.illustration}")`;
+        document.getElementById('puzzle-progress').textContent = `${index + 1} / ${puzzles.length}`;
+        document.querySelectorAll('[data-puzzle]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.puzzle)===index)));
+        puzzle.hints.forEach((lines,hintIndex)=>{
+          const panel = document.getElementById(`tab-${hintIndex + 1}`);
+          panel.querySelectorAll('p').forEach(item=>item.remove());
+          lines.forEach(line=>{const p=document.createElement('p');p.textContent=line;panel.append(p);});
+        });
+        document.getElementById('form').reset();
+        document.getElementById('answer-result').hidden = true;
+        document.getElementById('answer-message').textContent = '';
+        document.getElementById('next-puzzle').hidden = true;
+        erase_all();closeTabs();
       }
+      document.querySelectorAll('[data-puzzle]').forEach(button=>button.addEventListener('click',()=>{
+        if(Number(button.dataset.puzzle)!==currentPuzzle)selectPuzzle(Number(button.dataset.puzzle));
+      }));
+      document.getElementById('next-puzzle').addEventListener('click',()=>{
+        selectPuzzle((currentPuzzle + 1) % puzzles.length);
+        document.querySelector(`[data-puzzle="${currentPuzzle}"]`).focus();
+      });
+      document.getElementById('form').onsubmit = function() {
+        const correct = document.getElementById('input1').value.trim() === puzzles[currentPuzzle].answer;
+        document.getElementById('answer-result').hidden = false;
+        document.getElementById('answer-message').textContent = correct
+          ? `정답입니다! ${puzzles[currentPuzzle].explanation}`
+          : '정답이 아닙니다. 힌트를 확인하고 숫자로 다시 입력해 보세요.';
+        document.getElementById('next-puzzle').hidden = !correct;
+        return false;
+      };
+      selectPuzzle(0);
     </script>
     <p class="demo-note">HTML·JavaScript 수업 과제로 제작했습니다. 레이튼 교수 시리즈의 UI를 참고한 학습용 프로젝트입니다.</p>
   </body>
